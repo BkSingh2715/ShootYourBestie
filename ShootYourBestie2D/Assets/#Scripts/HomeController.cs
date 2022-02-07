@@ -7,6 +7,8 @@ public class HomeController : MonoBehaviourPunCallbacks
 {
     public GameObject connectorPanel;
 
+    private bool joined = false;
+
     void Start()
     {
         PhotonNetwork.ConnectUsingSettings();
@@ -16,14 +18,20 @@ public class HomeController : MonoBehaviourPunCallbacks
 
     public void LoadLobby()
     {
-        SceneManager.LoadScene(1);
+        if(joined)
+            SceneManager.LoadScene(1);
     }
     
     public override void OnConnectedToMaster()
     {
-        connectorPanel.SetActive(false);
-        print("CONNECTED");
-
         PhotonNetwork.JoinLobby();
+    }
+
+    public override void OnJoinedLobby()
+    {
+        connectorPanel.SetActive(false);
+        print("CONNECTED AND JOINED");
+
+        joined = true;
     }
 }

@@ -1,24 +1,53 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
+using TMPro;
+using Photon.Realtime;
 
-public class LobbyController : MonoBehaviour
+public class LobbyController : MonoBehaviourPunCallbacks
 {
-    private string createRoomName;
-    private string joinRoomName;
+    public GameObject connectingPanel;
 
-    public void CreateRoom()
+    public TMP_InputField createInput;
+    public TMP_InputField joinInput;
+
+    public TextMeshProUGUI playersInRoomText;
+
+    private int playersInRoom;
+
+    void Start()
     {
-        PhotonNetwork.CreateRoom(createRoomName);
+        connectingPanel.SetActive(false);
+    }
+
+    void Update()
+    {
+        SetPlayerCount();
     }
 
     public void JoinRoom()
     {
-        PhotonNetwork.JoinRoom(joinRoomName);
+        PhotonNetwork.JoinRoom(joinInput.textComponent.ToString());
     }
 
-    public void OnJoinedRoom()
+    public void CreateRoom()
     {
-        print("joined");
+        PhotonNetwork.CreateRoom(createInput.textComponent.ToString());
+    }
+
+    private void SetPlayerCount()
+    {
+        playersInRoomText.text = PhotonNetwork.PlayerList.Length.ToString() + " Players Joined";
+
+        if (PhotonNetwork.PlayerList.Length == 2)
+        {
+            PhotonNetwork.LoadLevel(2);
+        }
+    }
+
+    public override void OnJoinedRoom()
+    {
+        connectingPanel.SetActive(true);
+        playersInRoomText.text = PhotonNetwork.PlayerList.Length.ToString() + " Players Joined";
     }
 }
